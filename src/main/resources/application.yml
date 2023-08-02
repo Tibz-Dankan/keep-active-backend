@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/keep_active_db?user=postgres&password=ourpassword
+    url: jdbc:postgresql://localhost:5432/keep_active_db?user=postgres&password=yourpassword
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
