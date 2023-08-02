@@ -29,16 +29,19 @@ public class AuthenticationService {
 
   public AuthenticationResponse signup(SignUpRequest request) {
 
-//    TODO: validate email
-    var user = User.builder()
+    var user = repository.findByEmail(request.getEmail());
+    if(user.isPresent()){
+      throw new  IllegalStateException("Email already registered");
+    }
+    var newUser = User.builder()
         .username(request.getUsername())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole())
         .build();
-    var savedUser = repository.save(user);
-    var jwtToken = jwtService.generateToken(user);
-    var refreshToken = jwtService.generateRefreshToken(user);
+    var savedUser = repository.save(newUser);
+    var jwtToken = jwtService.generateToken(newUser);
+    var refreshToken = jwtService.generateRefreshToken(newUser);
     saveUserToken(savedUser, jwtToken);
 
     AuthenticationResponse response = new AuthenticationResponse();
