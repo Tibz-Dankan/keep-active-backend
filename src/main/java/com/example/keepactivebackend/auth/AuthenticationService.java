@@ -31,8 +31,7 @@ public class AuthenticationService {
 
 //    TODO: validate email
     var user = User.builder()
-        .firstname(request.getFirstname())
-        .lastname(request.getLastname())
+        .username(request.getUsername())
         .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole())
@@ -41,10 +40,20 @@ public class AuthenticationService {
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     saveUserToken(savedUser, jwtToken);
-    return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-            .refreshToken(refreshToken)
-        .build();
+//    return AuthenticationResponse.builder()
+//        .accessToken(jwtToken)
+//            .refreshToken(refreshToken)
+//        .build();
+    AuthenticationResponse response = new AuthenticationResponse();
+    response.setAccessToken(jwtToken);
+    response.setRefreshToken(refreshToken);
+    response.setUser(savedUser.getId());
+    response.setEmail(savedUser.getEmail());
+    response.setUsername(savedUser.getUsername());
+
+    System.out.println("response");
+    System.out.println(response);
+    return response;
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
