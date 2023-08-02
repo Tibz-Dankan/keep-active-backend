@@ -40,20 +40,15 @@ public class AuthenticationService {
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     saveUserToken(savedUser, jwtToken);
-//    return AuthenticationResponse.builder()
-//        .accessToken(jwtToken)
-//            .refreshToken(refreshToken)
-//        .build();
+
     AuthenticationResponse response = new AuthenticationResponse();
     response.setAccessToken(jwtToken);
     response.setRefreshToken(refreshToken);
     response.setUser(savedUser.getId());
     response.setEmail(savedUser.getEmail());
     response.setUsername(savedUser.getUsername());
-
-    System.out.println("response");
-    System.out.println(response);
     return response;
+
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -69,10 +64,14 @@ public class AuthenticationService {
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
-    return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-            .refreshToken(refreshToken)
-        .build();
+
+    AuthenticationResponse response = new AuthenticationResponse();
+    response.setAccessToken(jwtToken);
+    response.setRefreshToken(refreshToken);
+    response.setUser(user.getId());
+    response.setEmail(user.getEmail());
+    response.setUsername(user.getUsername());
+    return response;
   }
 
   private void saveUserToken(User user, String jwtToken) {

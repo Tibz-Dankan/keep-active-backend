@@ -16,13 +16,22 @@ public class AuthenticationResponse {
   private String accessToken;
   @JsonProperty("refresh_token")
   private String refreshToken;
+  @JsonProperty("user_id")
+  private Integer user_id;
+  @JsonProperty("email")
+  private String email;
+  @JsonProperty("username")
+  private String username;
 
-    public void setUser(Integer id) {
+  public void setUser(Integer id) {
+      this.user_id = id;
     }
 
   public void setEmail(String email) {
+    this.email = email;
   }
 
   public void setUsername(String username) {
+    this.username =  username;
   }
 }
