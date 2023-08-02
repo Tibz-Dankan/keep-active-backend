@@ -1,128 +1,82 @@
 package com.example.keepactivebackend.user;
 
+import com.example.keepactivebackend.token.Token;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+//@Getter
+//@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table
-public class User {
+@Table(name = "_user")
+public class User implements UserDetails {
+
     @Id
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "user_sequence")
-
-
-    private Long id;
-    private  String username;
+    @GeneratedValue
+    private Integer id;
+    private String firstname;
+    private String lastname;
     private String email;
     private String password;
-    private String imageUrl;
-    private String imagePath;
-    private boolean isVerified;
-    private String passwordResetToken;
-    private LocalDate passwordResetExpires;
-    public User() {
+    //public class User implements UserDetails {
+////
+//  @SequenceGenerator(
+//          name = "user_sequence",
+//          sequenceName = "user_sequence",
+//          allocationSize = 1
+//  )
+//  @Id
+//  @GeneratedValue(
+//          strategy = GenerationType.SEQUENCE,
+//          generator = "user_sequence"
+//  )
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return role.getAuthorities();
     }
 
-    public User(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
-
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
+    @Override
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    public boolean isVerified() {
-        return isVerified;
-    }
-
-    public void setVerified(boolean verified) {
-        isVerified = verified;
-    }
-
-    public String getPasswordResetToken() {
-        return passwordResetToken;
-    }
-
-    public void setPasswordResetToken(String passwordResetToken) {
-        this.passwordResetToken = passwordResetToken;
-    }
-
-    public LocalDate getPasswordResetExpires() {
-        return passwordResetExpires;
-    }
-
-    public void setPasswordResetExpires(LocalDate passwordResetExpires) {
-        this.passwordResetExpires = passwordResetExpires;
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", imagePath='" + imagePath + '\'' +
-                ", isVerified=" + isVerified +
-                ", passwordResetToken='" + passwordResetToken + '\'' +
-                ", passwordResetExpires=" + passwordResetExpires +
-                '}';
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
