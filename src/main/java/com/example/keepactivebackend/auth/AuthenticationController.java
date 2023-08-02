@@ -19,18 +19,16 @@ public class AuthenticationController {
   private final AuthenticationService service;
 
   @PostMapping("/signup")
-  public ResponseEntity<AuthenticationResponse> register(
-      @RequestBody RegisterRequest request
+  public ResponseEntity<AuthenticationResponse> signup(
+      @RequestBody SignUpRequest request
   ) {
-    System.out.println("request");
-    System.out.println(request);
-    return ResponseEntity.ok(service.register(request));
+    return ResponseEntity.ok(service.signup(request));
   }
   @PostMapping("/signin")
-  public ResponseEntity<AuthenticationResponse> authenticate(
-      @RequestBody AuthenticationRequest request
+  public ResponseEntity<AuthenticationResponse> signin(
+      @RequestBody SignInRequest request
   ) {
-    return ResponseEntity.ok(service.authenticate(request));
+    return ResponseEntity.ok(service.signin(request));
   }
 
   @PostMapping("/refresh-token")

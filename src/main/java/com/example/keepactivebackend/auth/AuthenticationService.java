@@ -27,7 +27,7 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse register(RegisterRequest request) {
+  public AuthenticationResponse signup(SignUpRequest request) {
 
 //    TODO: validate email
     var user = User.builder()
@@ -51,7 +51,7 @@ public class AuthenticationService {
 
   }
 
-  public AuthenticationResponse authenticate(AuthenticationRequest request) {
+  public AuthenticationResponse signin(SignInRequest request) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
