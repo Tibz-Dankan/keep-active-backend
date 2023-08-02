@@ -1,6 +1,7 @@
 package com.example.keepactivebackend.auth;
 
 import com.example.keepactivebackend.config.JwtService;
+import com.example.keepactivebackend.exception.NotAuthorizedException;
 import com.example.keepactivebackend.token.Token;
 import com.example.keepactivebackend.token.TokenRepository;
 import com.example.keepactivebackend.token.TokenType;
@@ -31,7 +32,7 @@ public class AuthenticationService {
 
     var user = repository.findByEmail(request.getEmail());
     if(user.isPresent()){
-      throw new  IllegalStateException("Email already registered");
+      throw new NotAuthorizedException("Email already taken");
     }
     var newUser = User.builder()
         .username(request.getUsername())

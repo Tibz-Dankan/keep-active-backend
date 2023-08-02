@@ -12,10 +12,9 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
-
-    @ExceptionHandler(OpenApiResourceNotFoundException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<AppError> handleException(
-            OpenApiResourceNotFoundException e, HttpServletRequest request
+            ResourceNotFoundException e, HttpServletRequest request
     ) {
         AppError appError = new AppError(
                 request.getRequestURI(),
@@ -40,23 +39,8 @@ public class DefaultExceptionHandler {
     }
 
 
-
-    @ExceptionHandler(InternalServerErrorException.class)
-//    @ExceptionHandler(OpenApiC)
-    public ResponseEntity<AppError> handleInternalServerErrorException(
-            InternalServerErrorException e, HttpServletRequest request
-    ) {
-        AppError appError = new AppError(
-                request.getRequestURI(),
-                e.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                LocalDateTime.now());
-
-        return new ResponseEntity<>(appError, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(NotAuthorizedException.class)
-    public ResponseEntity<AppError> handleNotAuthorizedException(
+    public ResponseEntity<AppError> handleException(
             NotAuthorizedException e, HttpServletRequest request
     ) {
         AppError appError = new AppError(
@@ -69,7 +53,7 @@ public class DefaultExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<AppError> handleBadRequestException(
+    public ResponseEntity<AppError> handleException(
             BadRequestException e, HttpServletRequest request
     ) {
         AppError appError = new AppError(
@@ -80,4 +64,19 @@ public class DefaultExceptionHandler {
 
         return new ResponseEntity<>(appError, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InternalServerErrorException.class)
+//    @ExceptionHandler(OpenApiC)
+    public ResponseEntity<AppError> handleException(
+            InternalServerErrorException e, HttpServletRequest request
+    ) {
+        AppError appError = new AppError(
+                request.getRequestURI(),
+                e.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                LocalDateTime.now());
+
+        return new ResponseEntity<>(appError, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
