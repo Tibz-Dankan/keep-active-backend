@@ -23,7 +23,7 @@ public class RequestController {
 
     @GetMapping(path = "/get-requests-by-app/{appId}")
     public ResponseEntity<List<Request>> getRequestsByApp(
-            @PathVariable("userId") Long appId
+            @PathVariable("appId") Long appId
     ) {
         List<Request> requests = requestService.getRequestsByApp(appId);
         return new ResponseEntity<>(requests, HttpStatus.OK);
