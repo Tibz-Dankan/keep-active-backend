@@ -10,8 +10,6 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-//@Getter
-//@Setter
 @Data
 @Builder
 @NoArgsConstructor
@@ -26,18 +24,7 @@ public class User implements UserDetails {
     private String username;
     private String email;
     private String password;
-    //public class User implements UserDetails {
-////
-//  @SequenceGenerator(
-//          name = "user_sequence",
-//          sequenceName = "user_sequence",
-//          allocationSize = 1
-//  )
-//  @Id
-//  @GeneratedValue(
-//          strategy = GenerationType.SEQUENCE,
-//          generator = "user_sequence"
-//  )
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
