@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -57,8 +58,11 @@ public class AppService {
         return app;
     }
 
-    public Optional<App> getAppsByUserId(Integer userId) {
-        return appRepository.findByUserId(userId);
+    public List<App> getAppsByUserId(Integer userId) {
+        Optional<List<App>> appsOptional = appRepository.findByUserId(userId);
+        // Handle the case when the user has no apps (optional is empty)
+        // You can return an empty list or throw an exception, depending on your requirements.
+        return appsOptional.orElseGet(List::of);
     }
 
     public void deleteApp(Long appId) {
