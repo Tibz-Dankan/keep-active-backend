@@ -1,4 +1,4 @@
-package com.example.keepactivebackend.auth;
+package com.example.keepactivebackend.apps;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignInRequest {
-
-  private String email;
-  private String password;
+public class UpdateAppRequest {
+    private Long id;
+    private String appName;
+    private String appUrl;
 }
+

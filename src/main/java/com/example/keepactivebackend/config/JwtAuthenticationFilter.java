@@ -1,5 +1,6 @@
 package com.example.keepactivebackend.config;
 
+import com.example.keepactivebackend.exception.NotAuthorizedException;
 import com.example.keepactivebackend.token.TokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -41,6 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     final String userEmail;
     if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
       filterChain.doFilter(request, response);
+//      throw  new NotAuthorizedException("You have no token, please signin");
       return;
     }
     jwt = authHeader.substring(7);
