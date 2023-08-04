@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_apps")
+@Table(name = "_requests")
 public class Request {
 
     @Id
@@ -21,7 +21,7 @@ public class Request {
     private Long id;
 
     @Column(name = "app_id") // userId as a foreign key column
-    private Integer appId;
+    private Long appId;
     private String status;   //request status
 
     @Column(columnDefinition = "TIMESTAMP")
@@ -33,7 +33,7 @@ public class Request {
         return id;
     }
 
-    public Integer getAppId() {  return appId; }
+    public Long getAppId() {  return appId; }
 
     public String getStatus() {  return status; }
 

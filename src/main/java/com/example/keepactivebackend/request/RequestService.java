@@ -1,8 +1,15 @@
 package com.example.keepactivebackend.request;
 
+import com.example.keepactivebackend.apps.App;
+import com.example.keepactivebackend.apps.AppRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +18,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RequestService {
 
-    final private RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
+    private final AppRepository appRepository;
+    private WebClient webClient;
 
-    public Request saveRequest(Request request) {
+    public void saveRequest(Request request) {
 
         Request newRequest = Request.builder()
                 .appId(request.getAppId())
@@ -21,7 +30,68 @@ public class RequestService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-         return requestRepository.save(newRequest);
+        requestRepository.save(newRequest);
+    }
+
+    public void makeApiRequest(Long appId, String appName, String appUrl) {
+        RequestPayload payload = new RequestPayload(appName, LocalDateTime.now());
+
+        webClient.post()
+                .uri(appUrl) // Replace "/endpoint" with your actual API endpoint path.
+                .body(Mono.just(payload), RequestPayload.class)
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::isError,
+                        clientResponse -> {
+                            Request newRequest = new Request();
+                            newRequest.setAppId(appId);
+                            newRequest.setStatus("Failed with status code: " + clientResponse.statusCode());
+                            System.out.println("Response Client" + clientResponse);
+                            saveRequest(newRequest);
+//                            TODO: to add custom exception for these errors
+                            return Mono.error(new RuntimeException("API call failed with status: " + clientResponse.statusCode()));
+                        }
+                )
+                .bodyToMono(String.class)
+                .subscribe(
+                        responseJson -> {
+                            // Process the response JSON here.
+                            System.out.println("Response JSON: " + responseJson);
+                        },
+                        error -> {
+                            // Handle any errors that occurred during the API call.
+                            System.err.println("Error: " + error.getMessage());
+                        }
+                );
+    }
+
+    public void makeApiCallPeriodically() {
+//         Run the API call every minute using the Scheduler.
+        Optional<App> app = appRepository.findById(5L);
+        System.out.println("app");
+        System.out.println(app);
+
+//        {
+//            "id":5,
+//                "userId":1,
+//                "appName":"Abacusug",
+//                "createdAt":"2023-08-04T05:19:41.628385",
+//                "updatedAt":null,
+//                "appUrl":"https://localhost:5000/api/keep-active",
+//                "appId":5
+//        }
+
+
+        Schedulers.single().schedulePeriodically(
+                () -> makeApiRequest(
+                        app.get().getAppId(),
+                        app.get().getAppName(),
+                        app.get().getAppUrl()
+                ),
+                0, // Initial delay (0 milliseconds means start immediately)
+                1, // Period (1 minute)
+                Duration.ofMinutes(1) // Time unit for the initial delay and period
+        );
     }
 
     public List<Request> getRequestsByApp(Long appId) {
