@@ -3,6 +3,7 @@ package com.example.keepactivebackend.request;
 import com.example.keepactivebackend.apps.App;
 import com.example.keepactivebackend.apps.AppRepository;
 import com.example.keepactivebackend.exception.InternalServerErrorException;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -10,11 +11,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -73,19 +76,44 @@ public class RequestService {
         }
     }
 
+    @PostConstruct
     public void makeApiRequestPeriodically() {
-        Optional<App> app = appRepository.findById(5L);
+        List<App> apps = appRepository.findAll();
 
-        Schedulers.single().schedulePeriodically(
-                () -> makeApiRequest(
-                        app.get().getAppId(),
-                        app.get().getAppName(),
-                        app.get().getAppUrl()
-                ),
-                0,
-                60_000,
-                java.util.concurrent.TimeUnit.MILLISECONDS
-        );
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        scheduler.execute(() -> {
+            for (App app : apps) {
+                makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl());
+            }
+        });
+
+        scheduler.scheduleAtFixedRate(() -> {
+            for (App app : apps) {
+                makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl());
+            }
+        }, 0, 20, TimeUnit.SECONDS);
+    }
+
+    @PostConstruct
+    public void scheduleRequests() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.execute(this::executeRequests);  //Run at app start
+//        scheduler.scheduleAtFixedRate(this::executeRequests, 0, 5, TimeUnit.MINUTES); //Run at every 5 minutes
+        scheduler.scheduleWithFixedDelay(this::executeRequests, 0, 5, TimeUnit.MINUTES); //Run at every 5 minutes
+//        scheduleWithFixedDelay
+    }
+
+    private void executeRequests() {
+        List<App> apps = appRepository.findAll();
+
+        ScheduledExecutorService requestExecutor = Executors.newScheduledThreadPool(1);
+
+        for (App app : apps) {
+//            requestExecutor.scheduleAtFixedRate(() -> makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl()),
+//                    0, 20, TimeUnit.SECONDS);
+            makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl());
+        }
     }
 
     public List<Request> getRequestsByApp(Long appId) {
