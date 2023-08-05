@@ -39,8 +39,7 @@ public class AppService {
                 () -> new ResourceNotFoundException("App with id " + appId + " does not exists")
         );
 
-        if (appName != null && appName.length() > 0 && !Objects.equals(app.getAppName(), appName)) {
-            app.setAppName(appName);
+        if (appUrl != null && appUrl.length() > 0 && !Objects.equals(app.getAppUrl(), appUrl)) {
             app.setAppUrl(appUrl);
             app.setUpdatedAt(LocalDateTime.now());
         }
@@ -51,7 +50,6 @@ public class AppService {
                 throw new BadRequestException("Can't Update to already taken name");
             }
             app.setAppName(appName);
-            app.setAppUrl(appUrl);
             app.setUpdatedAt(LocalDateTime.now());
         }
 

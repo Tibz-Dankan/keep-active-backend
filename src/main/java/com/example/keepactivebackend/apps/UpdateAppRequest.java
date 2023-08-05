@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateAppRequest {
-    private Long id;
+//    private Long id;
     private String appName;
     private String appUrl;
 }

@@ -22,13 +22,13 @@ public class RequestController {
     final private RequestService requestService;
 
    // TODO: Make requests here
-    @Scheduled(fixedRate = 10000)
-    @PreAuthorize("permitAll()")
-    public void makeApiRequestPeriodically(){
-        System.out.println("Started making api request");
-        requestService.makeApiRequestPeriodically();
-        System.out.println("Finished making api request");
-    }
+//    @Scheduled(fixedRate = 10000)
+//    @PreAuthorize("permitAll()")
+//    public void makeApiRequestPeriodically(){
+//        System.out.println("Started making api request");
+//        requestService.makeApiRequestPeriodically();
+//        System.out.println("Finished making api request");
+//    }
 
     @GetMapping(path = "/get-requests-by-app/{appId}")
     public ResponseEntity<List<Request>> getRequestsByApp(
