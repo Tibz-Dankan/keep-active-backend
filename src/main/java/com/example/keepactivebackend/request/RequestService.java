@@ -2,6 +2,7 @@ package com.example.keepactivebackend.request;
 
 import com.example.keepactivebackend.apps.App;
 import com.example.keepactivebackend.apps.AppRepository;
+import com.example.keepactivebackend.exception.InternalServerErrorException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -46,24 +47,25 @@ public class RequestService {
                     .onStatus(
                             HttpStatusCode::isError,
                             clientResponse -> {
-                                Request newRequest = new Request();
-                                newRequest.setAppId(appId);
-                                newRequest.setStatus("Failed with status code: " + clientResponse.statusCode());
-                                System.out.println("Response Client" + clientResponse);
-                                saveRequest(newRequest);
-//                            TODO: to add custom exception for these errors
-                                return Mono.error(new RuntimeException("API call failed with status: " + clientResponse.statusCode()));
+                                return Mono.error(new InternalServerErrorException("API call failed with status: " + clientResponse.statusCode()));
                             }
                     )
                     .bodyToMono(String.class)
                     .subscribe(
                             responseJson -> {
-                                // Process the response JSON here.
                                 System.out.println("Response JSON: " + responseJson);
+                                Request newRequest = new Request();
+                                newRequest.setAppId(appId);
+                                newRequest.setStatus("Successfully executed");
+                                System.out.println("Request successfully executed");
+                                saveRequest(newRequest);
                             },
                             error -> {
-                                // Handle any errors that occurred during the API call.
+                                Request newRequest = new Request();
+                                newRequest.setAppId(appId);
+                                newRequest.setStatus("Failed with error: " + error.getMessage());
                                 System.err.println("Error: " + error.getMessage());
+                                saveRequest(newRequest);
                             }
                     );
         } catch (Exception e) {
@@ -72,21 +74,7 @@ public class RequestService {
     }
 
     public void makeApiRequestPeriodically() {
-//         Run the API call every minute using the Scheduler.
         Optional<App> app = appRepository.findById(5L);
-        System.out.println("app");
-        System.out.println(app);
-
-//        {
-//            "id":5,
-//                "userId":1,
-//                "appName":"Abacusug",
-//                "createdAt":"2023-08-04T05:19:41.628385",
-//                "updatedAt":null,
-//                "appUrl":"https://localhost:5000/api/keep-active",
-//                "appId":5
-//        }
-
 
         Schedulers.single().schedulePeriodically(
                 () -> makeApiRequest(
@@ -94,9 +82,9 @@ public class RequestService {
                         app.get().getAppName(),
                         app.get().getAppUrl()
                 ),
-                0, // Initial delay (0 milliseconds means start immediately)
-                60_000, // Period in milliseconds (1 minute)
-                java.util.concurrent.TimeUnit.MILLISECONDS // Time unit for the initial delay and period
+                0,
+                60_000,
+                java.util.concurrent.TimeUnit.MILLISECONDS
         );
     }
 
