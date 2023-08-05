@@ -22,7 +22,7 @@ public class RequestController {
     final private RequestService requestService;
 
    // TODO: Make requests here
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 300000)
     @PreAuthorize("permitAll()")
     public void makeApiRequestPeriodically(){
         requestService.makeApiRequestPeriodically();
