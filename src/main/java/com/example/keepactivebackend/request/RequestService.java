@@ -4,6 +4,7 @@ import com.example.keepactivebackend.apps.App;
 import com.example.keepactivebackend.apps.AppRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -39,6 +40,7 @@ public class RequestService {
         try {
             webClient.post()
                     .uri(appUrl)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(Mono.just(payload), RequestPayload.class)
                     .retrieve()
                     .onStatus(
