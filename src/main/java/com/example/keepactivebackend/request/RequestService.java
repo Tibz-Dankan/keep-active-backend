@@ -47,7 +47,7 @@ public class RequestService {
                     .onStatus(
                             HttpStatusCode::isError,
                             clientResponse -> {
-                                return Mono.error(new InternalServerErrorException("API call failed with status: " + clientResponse.statusCode()));
+                                return Mono.error(new InternalServerErrorException(clientResponse.statusCode().toString()));
                             }
                     )
                     .bodyToMono(String.class)
@@ -63,7 +63,7 @@ public class RequestService {
                             error -> {
                                 Request newRequest = new Request();
                                 newRequest.setAppId(appId);
-                                newRequest.setStatus("Failed with error: " + error.getMessage());
+                                newRequest.setStatus(error.getMessage());
                                 System.err.println("Error: " + error.getMessage());
                                 saveRequest(newRequest);
                             }
@@ -80,8 +80,6 @@ public class RequestService {
             makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl());
         }
     }
-
-
 
     public List<Request> getRequestsByApp(Long appId) {
 
