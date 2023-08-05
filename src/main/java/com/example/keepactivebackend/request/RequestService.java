@@ -15,9 +15,6 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -79,42 +76,12 @@ public class RequestService {
     @PostConstruct
     public void makeApiRequestPeriodically() {
         List<App> apps = appRepository.findAll();
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-        scheduler.execute(() -> {
-            for (App app : apps) {
-                makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl());
-            }
-        });
-
-        scheduler.scheduleAtFixedRate(() -> {
-            for (App app : apps) {
-                makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl());
-            }
-        }, 0, 20, TimeUnit.SECONDS);
-    }
-
-    @PostConstruct
-    public void scheduleRequests() {
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.execute(this::executeRequests);  //Run at app start
-//        scheduler.scheduleAtFixedRate(this::executeRequests, 0, 5, TimeUnit.MINUTES); //Run at every 5 minutes
-        scheduler.scheduleWithFixedDelay(this::executeRequests, 0, 5, TimeUnit.MINUTES); //Run at every 5 minutes
-//        scheduleWithFixedDelay
-    }
-
-    private void executeRequests() {
-        List<App> apps = appRepository.findAll();
-
-        ScheduledExecutorService requestExecutor = Executors.newScheduledThreadPool(1);
-
         for (App app : apps) {
-//            requestExecutor.scheduleAtFixedRate(() -> makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl()),
-//                    0, 20, TimeUnit.SECONDS);
             makeApiRequest(app.getAppId(), app.getAppName(), app.getAppUrl());
         }
     }
+
+
 
     public List<Request> getRequestsByApp(Long appId) {
 
