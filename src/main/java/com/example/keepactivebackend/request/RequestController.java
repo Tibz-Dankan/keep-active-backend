@@ -21,7 +21,7 @@ public class RequestController {
 
     final private RequestService requestService;
 
-    @Scheduled(fixedRate = 300000) //5min
+//    @Scheduled(fixedRate = 300000) //5min
     @PreAuthorize("permitAll()")
     public void makeApiRequestPeriodically() {
         requestService.makeApiRequestPeriodically();
