@@ -1,9 +1,6 @@
 spring:
-  config:
-    import: classpath:secretes.env
   datasource:
-    url: ${DATABASE_URL}
-#    url: ${DEV_DATABASE_URL}
+    url: ${DEV_DATABASE_URL}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
