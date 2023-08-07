@@ -1,7 +1,13 @@
 spring:
   datasource:
-    url: ${DEV_DATABASE_URL}
+    url: ${DATABASE_URL}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-test-query: SELECT 1
+
   jpa:
     hibernate:
       ddl-auto: update
